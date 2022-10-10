@@ -18,6 +18,7 @@ Coord = Tuple[int, int]
 class State:
 
     id: str
+    piece_color: str
     grid: Grid
     is_max_turn: bool
 
@@ -25,28 +26,55 @@ class State:
         self.grid = grid
         self.is_max_turn = is_max_turn
         self._generate_id()
-
-    def get_successors(self) -> List['State']:
-
         if self.is_max_turn:
-            color = 'r'
-            move_direction = -1
+            self.piece_color = MAX
         else:
-            color = 'b'
-            move_direction = 1
+            self.piece_color = MIN
 
-        for row in range(self.grid):
-            for col in range(self.grid[row]):
+    def get_successors(self) -> List[Grid]:
 
-                piece = self.grid[row][col]
+        normal_moves = []
+        jump_moves = []
 
-                if piece.lower() != color:
+        for row in range(len(self.grid)):
+            for col in range(len(self.grid[row])):
+
+                if self.grid[row][col].lower() != self.piece_color:
                     continue
-                # if piece == color:
-                    # self.get_moves((row, col), move_direction, [1])
-                # King
-                # else:
-                    # self.get_moves((row, col), move_direction, [-1, 1])
+
+                jump_moves.extend(self._jump_move(self.grid, (row, col)))
+
+                # Mandatory Captures; if a capture can be performed, no point in
+                # exploring non-capture moves
+                if len(jump_moves) == 0:
+                    normal_moves.extend(self._normal_move(self.grid, (row, col)))
+
+        if len(jump_moves):
+            return jump_moves
+        else:
+            return normal_moves
+
+    def _normal_move(self, grid: Grid, pos: Coord) -> List[Grid]:
+
+        row, col = pos
+        piece_to_move = grid[row][col]
+        row_deltas = self._get_row_deltas(piece_to_move)
+
+        moves = []
+
+        for row_delta in row_deltas:
+            for col_delta in [-1, 1]:
+
+                n_row = row + row_delta
+                n_col = col + col_delta
+
+                if n_row not in range(DIM) or n_col not in range(DIM):
+                    continue
+                if grid[n_row][n_col] == EMPTY:
+                    new_move = self._swap_pieces_on_copy(grid, pos, (n_row, n_col))
+                    moves.append(new_move)
+
+        return moves
 
     def _jump_move(self, grid: Grid, pos: Coord, depth: int = 0) -> List[Grid]:
 
@@ -79,7 +107,7 @@ class State:
                     continue
 
                 # Jump can be made
-                new_move = self._swap_pieces(grid, pos, (jump_row, jump_col))
+                new_move = self._swap_pieces_on_copy(grid, pos, (jump_row, jump_col))
                 new_move[n_row][n_col] = EMPTY
                 moves += self._jump_move(new_move, (jump_row, jump_col), depth + 1)
 
@@ -97,7 +125,7 @@ class State:
         else:
             return [-1, 1]
 
-    def _swap_pieces(self, grid: Grid, old_pos: Coord, new_pos: Coord) -> Grid:
+    def _swap_pieces_on_copy(self, grid: Grid, old_pos: Coord, new_pos: Coord) -> Grid:
 
         copied_grid = deepcopy(grid)
         copied_grid[new_pos[0]][new_pos[1]] = grid[old_pos[0]][old_pos[1]]
