@@ -79,6 +79,46 @@ class TestGetSuccessors(unittest.TestCase):
 
         self.assertEqual(1, len(moves))
 
+    def test_max_promotion(self):
+        initial_grid = [
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", "r", ".", ".", ".", ".", "r", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            ["b", ".", ".", ".", ".", ".", "b", "."],
+        ]
+
+        initial_state = State(initial_grid, True)
+        moves = initial_state.get_successors()
+
+        self.assertEqual(4, len(moves))
+        for move in moves:
+            self.assertTrue("R" in move[0])
+            self.assertTrue("B" not in move[7])
+
+    def test_min_promotion(self):
+        initial_grid = [
+            ["r", ".", ".", ".", ".", ".", ".", "r"],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", "b", ".", ".", ".", ".", "."],
+            [".", "r", ".", ".", ".", ".", "b", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+        ]
+
+        initial_state = State(initial_grid, False)
+        moves = initial_state.get_successors()
+
+        self.assertEqual(1, len(moves))
+        for move in moves:
+            self.assertTrue("B" in move[7])
+            self.assertTrue("R" not in move[0])
+
 
 # Testing jump abilities of a man (non-King) piece
 class TestManJump(unittest.TestCase):
@@ -303,7 +343,7 @@ class TestManJump(unittest.TestCase):
             [".", ".", ".", ".", ".", ".", ".", "."],
         ]
         expected_grid = [
-            [".", ".", ".", ".", ".", "r", ".", "."],
+            [".", ".", ".", ".", ".", "R", ".", "."],
             [".", ".", ".", ".", ".", ".", ".", "."],
             [".", ".", ".", ".", ".", ".", ".", "."],
             [".", ".", ".", ".", ".", ".", ".", "."],

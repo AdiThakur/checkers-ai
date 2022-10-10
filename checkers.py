@@ -131,7 +131,19 @@ class State:
         copied_grid[new_pos[0]][new_pos[1]] = grid[old_pos[0]][old_pos[1]]
         copied_grid[old_pos[0]][old_pos[1]] = EMPTY
 
+        self._try_promotion(copied_grid, new_pos)
+
         return copied_grid
+
+    def _try_promotion(self, grid: Grid, pos: Coord) -> None:
+
+        row, col = pos
+        piece = grid[row][col]
+
+        if piece == MIN and row == DIM - 1:
+            grid[row][col] = MIN.upper()
+        if piece == MAX and row == 0:
+            grid[row][col] = MAX.upper()
 
     def _generate_id(self) -> None:
         self.id = ""
