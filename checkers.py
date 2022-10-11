@@ -190,6 +190,7 @@ def is_game_over(state: State) -> bool:
     max_pieces, min_pieces = state.get_piece_count()
     return max_pieces == 0 or min_pieces == 0
 
+
 def df_minimax(curr_state: State, depth_limit: int) -> Tuple[int, Optional[State]]:
 
     best_move: Optional[State] = None
