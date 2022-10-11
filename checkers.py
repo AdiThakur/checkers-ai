@@ -1,4 +1,5 @@
 from copy import deepcopy
+from math import inf
 from sys import argv
 from typing import *
 
@@ -53,6 +54,20 @@ class State:
             return jump_moves
         else:
             return normal_moves
+
+    def get_piece_count(self) -> Tuple[int, int]:
+
+        max_count = 0
+        min_count = 0
+
+        for row in self.grid:
+            for piece in row:
+                if piece.lower() == MAX:
+                    max_count += 1
+                elif piece.lower() == MIN:
+                    min_count += 1
+
+        return (max_count, min_count)
 
     def _normal_move(self, grid: Grid, pos: Coord) -> List[Grid]:
 
@@ -169,6 +184,41 @@ def basic_utility(state: State) -> int:
                     min_count += 1
 
     return (max_count - min_count)
+
+
+def is_game_over(state: State) -> bool:
+    max_pieces, min_pieces = state.get_piece_count()
+    return max_pieces == 0 or min_pieces == 0
+
+def df_minimax(curr_state: State, depth_limit: int) -> Tuple[int, State]:
+
+    best_move: Optional[State] = None
+    best_util = -inf if curr_state.is_max_turn else inf
+    curr_util = basic_utility(curr_state)
+
+    if depth_limit == 0 or is_game_over(curr_state):
+        return curr_util, best_move
+
+    successors = curr_state.get_successors()
+
+    if len(successors) == 0:
+        return curr_util, best_move
+
+    for successor in successors:
+
+        s_state = State(successor, not (curr_state.is_max_turn))
+        s_util, _ = df_minimax(s_state, depth_limit - 1)
+
+        if curr_state.is_max_turn:
+            if s_util > best_util:
+                best_util = s_util
+                best_move = s_state
+        else:
+            if s_util < best_util:
+                best_util = s_util
+                best_move = s_state
+
+    return best_util, best_move
 
 
 def generate_grid(filename: str) -> Grid:
