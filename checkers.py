@@ -190,7 +190,7 @@ def is_game_over(state: State) -> bool:
     max_pieces, min_pieces = state.get_piece_count()
     return max_pieces == 0 or min_pieces == 0
 
-def df_minimax(curr_state: State, depth_limit: int) -> Tuple[int, State]:
+def df_minimax(curr_state: State, depth_limit: int) -> Tuple[int, Optional[State]]:
 
     best_move: Optional[State] = None
     best_util = -inf if curr_state.is_max_turn else inf
@@ -232,9 +232,24 @@ def generate_grid(filename: str) -> Grid:
     return grid
 
 
+def write_best_move(filename: str, best_move: Optional[State]) -> None:
+
+    if best_move is None:
+        return
+
+    with open(filename, mode='w') as output_file:
+        for row in best_move.grid:
+            row_str = ""
+            for col in row:
+                row_str += col
+            output_file.write(row_str + "\n")
+
+
 def main(input_filename: str, output_filename: str) -> None:
     initial_grid = generate_grid(input_filename)
     initial_state = State(initial_grid, True)
+    _, best_move = df_minimax(initial_state, depth_limit=8)
+    write_best_move(output_filename, best_move)
 
 
 if __name__ == "__main__":
@@ -247,3 +262,5 @@ if __name__ == "__main__":
         input_filename=argv[1],
         output_filename=argv[2],
     )
+
+    # main("test_inputs/puzzle1.txt", "test_outputs/puzzle1_out.txt")

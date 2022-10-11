@@ -14,7 +14,7 @@ class TestGenerateGrid(unittest.TestCase):
             [".", ".", ".", "r", ".", ".", ".", "."],
             [".", ".", ".", ".", "B", ".", ".", "."],
         ]
-        puzzle_file_name = "puzzle1.txt"
+        puzzle_file_name = "test_inputs/puzzle1.txt"
 
         result = generate_grid(puzzle_file_name)
 
