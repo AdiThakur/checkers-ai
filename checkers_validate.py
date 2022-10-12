@@ -2,11 +2,12 @@ import os
 
 if __name__ == '__main__':
 
-    print("Input file: input0.txt, output file: output0.txt")
-    os.system("python checkers.py ./checkers_validate/input0.txt ./checkers_validate/output0.txt")
+    version = '2'
+    print(f"Input file: input{version}.txt, output file: output{version}.txt")
+    os.system(f"python checkers.py ./checkers_validate/input{version}.txt ./checkers_validate/output{version}.txt")
 
-    output_read = open("./checkers_validate/output0.txt", "r")
-    solution_read = open("./checkers_validate/solution0.txt", "r")
+    output_read = open(f"./checkers_validate/output{version}.txt", "r")
+    solution_read = open(f"./checkers_validate/solution{version}.txt", "r")
 
     output_lines = output_read.readlines()
     solution_lines = solution_read.readlines()
