@@ -86,8 +86,9 @@ class State:
                 if n_row not in range(DIM) or n_col not in range(DIM):
                     continue
                 if grid[n_row][n_col] == EMPTY:
-                    new_move = self._swap_pieces_on_copy(grid, pos, (n_row, n_col))
-                    moves.append(new_move)
+                    grid_after_move = self._swap_pieces_on_copy(grid, pos, (n_row, n_col))
+                    self._try_promotion(grid_after_move, (n_row, n_col))
+                    moves.append(grid_after_move)
 
         return moves
 
@@ -109,12 +110,12 @@ class State:
                     continue
                 if grid[n_row][n_col] == EMPTY:
                     continue
-                if grid[n_row][n_col] == piece_to_move:
+                if grid[n_row][n_col].lower() == piece_to_move.lower():
                     continue
 
                 # Jump opportunity
-                jump_row = pos[0] + (2 * row_delta)
-                jump_col = pos[1] + (2 * col_delta)
+                jump_row = row + (2 * row_delta)
+                jump_col = col + (2 * col_delta)
 
                 if jump_row not in range(DIM) or jump_col not in range(DIM):
                     continue
@@ -122,9 +123,14 @@ class State:
                     continue
 
                 # Jump can be made
-                new_move = self._swap_pieces_on_copy(grid, pos, (jump_row, jump_col))
-                new_move[n_row][n_col] = EMPTY
-                moves += self._jump_move(new_move, (jump_row, jump_col), depth + 1)
+                grid_after_move = self._swap_pieces_on_copy(grid, pos, (jump_row, jump_col))
+                grid_after_move[n_row][n_col] = EMPTY
+
+                # Cannot continue jumps after promotion
+                if self._try_promotion(grid_after_move, (jump_row, jump_col)):
+                    moves.append(grid_after_move)
+                else:
+                    moves += self._jump_move(grid_after_move, (jump_row, jump_col), depth + 1)
 
         if len(moves):
             return moves
@@ -146,19 +152,21 @@ class State:
         copied_grid[new_pos[0]][new_pos[1]] = grid[old_pos[0]][old_pos[1]]
         copied_grid[old_pos[0]][old_pos[1]] = EMPTY
 
-        self._try_promotion(copied_grid, new_pos)
-
         return copied_grid
 
-    def _try_promotion(self, grid: Grid, pos: Coord) -> None:
+    def _try_promotion(self, grid: Grid, pos: Coord) -> bool:
 
         row, col = pos
         piece = grid[row][col]
 
         if piece == MIN and row == DIM - 1:
             grid[row][col] = MIN.upper()
+            return True
         if piece == MAX and row == 0:
             grid[row][col] = MAX.upper()
+            return True
+
+        return False
 
     def _generate_id(self) -> None:
         self.id = ""
@@ -289,7 +297,7 @@ def main(input_filename: str, output_filename: str) -> None:
     initial_grid = generate_grid(input_filename)
     initial_state = State(initial_grid, True)
     # _, best_move = df_minimax(initial_state, depth_limit=8)
-    _, best_move = alpha_beta(initial_state, -inf, inf, depth_limit=10)
+    _, best_move = alpha_beta(initial_state, -inf, inf, depth_limit=11)
     write_best_move(output_filename, best_move)
 
 

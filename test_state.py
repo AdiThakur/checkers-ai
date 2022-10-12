@@ -62,22 +62,39 @@ class TestGetSuccessors(unittest.TestCase):
 
         self.assertEqual(4, len(moves))
 
-    def test_mandatory_captures(self):
+    def test_max_mandatory_captures(self):
         initial_grid = [
             [".", ".", ".", ".", ".", ".", ".", "."],
             [".", ".", ".", ".", ".", ".", ".", "."],
             [".", ".", "b", ".", ".", ".", ".", "."],
             [".", ".", ".", "R", ".", ".", ".", "."],
-            [".", ".", ".", ".", ".", ".", ".", "."],
-            [".", ".", ".", ".", ".", ".", ".", "."],
-            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", "r", ".", "."],
+            [".", ".", "b", ".", ".", ".", ".", "."],
+            [".", "r", ".", ".", ".", ".", ".", "."],
             [".", ".", ".", ".", ".", ".", ".", "."],
         ]
 
         initial_state = State(initial_grid, True)
         moves = initial_state.get_successors()
 
-        self.assertEqual(1, len(moves))
+        self.assertEqual(2, len(moves))
+
+    def test_min_mandatory_captures(self):
+        initial_grid = [
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", "b", ".", ".", ".", ".", "."],
+            [".", ".", ".", "R", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", "r", ".", "."],
+            [".", ".", "b", ".", ".", ".", ".", "."],
+            [".", "r", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+        ]
+
+        initial_state = State(initial_grid, False)
+        moves = initial_state.get_successors()
+
+        self.assertEqual(2, len(moves))
 
     def test_max_promotion(self):
         initial_grid = [
@@ -399,6 +416,60 @@ class TestManJump(unittest.TestCase):
 
         initial_state = State(initial_grid, True)
         moves = initial_state._jump_move(initial_state.grid, (0, 3))
+
+        self.assertEqual(expected_grid, moves[0])
+
+    def test_min_multi_jump_terminates_when_promoted(self):
+        initial_grid = [
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", "b", ".", "."],
+            [".", ".", ".", ".", "r", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", "r", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", "r", ".", "r", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+        ]
+        expected_grid = [
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", "r", ".", ".", ".", ".", "."],
+            [".", ".", ".", "B", ".", ".", ".", "."],
+        ]
+
+        initial_state = State(initial_grid, False)
+        moves = initial_state._jump_move(initial_state.grid, (1, 5))
+
+        self.assertEqual(expected_grid, moves[0])
+
+    def test_max_multi_jump_terminates_when_promoted(self):
+        initial_grid = [
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", "b", ".", "b", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", "b", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", "b", ".", ".", "."],
+            [".", ".", ".", ".", ".", "r", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+        ]
+        expected_grid = [
+            [".", ".", ".", "R", ".", ".", ".", "."],
+            [".", ".", "b", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+        ]
+
+        initial_state = State(initial_grid, True)
+        moves = initial_state._jump_move(initial_state.grid, (6, 5))
 
         self.assertEqual(expected_grid, moves[0])
 
