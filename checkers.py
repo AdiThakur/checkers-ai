@@ -18,7 +18,6 @@ Coord = Tuple[int, int]
 
 class State:
 
-    id: str
     piece_color: str
     grid: Grid
     is_max_turn: bool
@@ -26,7 +25,6 @@ class State:
     def __init__(self, grid: Grid, is_max_turn: bool) -> None:
         self.grid = grid
         self.is_max_turn = is_max_turn
-        self._generate_id()
         if self.is_max_turn:
             self.piece_color = MAX
         else:
@@ -167,12 +165,6 @@ class State:
             return True
 
         return False
-
-    def _generate_id(self) -> None:
-        self.id = ""
-        for row in self.grid:
-            for col in row:
-                self.id += col
 
 
 def basic_utility(state: State) -> int:
