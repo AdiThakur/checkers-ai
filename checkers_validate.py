@@ -1,4 +1,5 @@
 import os
+import time
 
 if __name__ == '__main__':
 
@@ -7,7 +8,9 @@ if __name__ == '__main__':
     for version in [0, 1, 2]:
 
         print(f"Input file: input{version}.txt, output file: output{version}.txt")
+        start = time.time()
         os.system(f"python3 checkers.py ./checkers_validate/input{version}.txt ./checkers_validate/output{version}.txt")
+        print(f"\tTook {time.time() - start} seconds")
 
         output_read = open(f"./checkers_validate/output{version}.txt", "r")
         solution_read = open(f"./checkers_validate/solution{version}.txt", "r")
