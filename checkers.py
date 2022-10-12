@@ -297,7 +297,7 @@ def main(input_filename: str, output_filename: str) -> None:
     initial_grid = generate_grid(input_filename)
     initial_state = State(initial_grid, True)
     # _, best_move = df_minimax(initial_state, depth_limit=8)
-    _, best_move = alpha_beta(initial_state, -inf, inf, depth_limit=11)
+    _, best_move = alpha_beta(initial_state, -inf, inf, depth_limit=12)
     write_best_move(output_filename, best_move)
 
 
