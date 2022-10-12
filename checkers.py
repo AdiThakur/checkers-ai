@@ -255,16 +255,16 @@ def alpha_beta(
             if s_util > best_util:
                 best_util = s_util
                 best_move = s_state
-            if curr_util >= beta:
-                return curr_util, best_move
-            alpha = max(curr_util, alpha)
+            if best_util >= beta:
+                return best_util, best_move
+            alpha = max(best_util, alpha)
         else:
             if s_util < best_util:
                 best_util = s_util
                 best_move = s_state
-            if curr_util <= alpha:
-                return curr_util, best_move
-            beta = min(curr_util, beta)
+            if best_util <= alpha:
+                return best_util, best_move
+            beta = min(best_util, beta)
 
     return best_util, best_move
 

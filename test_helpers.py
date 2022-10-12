@@ -201,6 +201,38 @@ class TestMinimax(unittest.TestCase):
         self.assertEqual(-1, best_min_util)
         self.assertIsNone(best_min_move)
 
+    def test_solution(self):
+        grid = [
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", "b", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "R"],
+            [".", ".", "b", ".", "b", ".", ".", "."],
+            [".", ".", ".", "b", ".", ".", ".", "r"],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", "r", ".", ".", ".", "."],
+            [".", ".", ".", ".", "B", ".", ".", "."],
+        ]
+        expected_grid = [
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", "b", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "R"],
+            [".", ".", "b", ".", "b", ".", "r", "."],
+            [".", ".", ".", "b", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", "r", ".", ".", ".", "."],
+            [".", ".", ".", ".", "B", ".", ".", "."],
+        ]
+
+        initial_state = State(grid, True)
+        _, best_mini_max_move = df_minimax(initial_state, depth_limit=8)
+
+        self.assertEqual(expected_grid, best_mini_max_move.grid)
+
+        initial_state = State(grid, True)
+        _, best_alpha_beta_move = alpha_beta(initial_state, -inf, inf, depth_limit=8)
+
+        self.assertEqual(expected_grid, best_alpha_beta_move.grid)
+
 
 if __name__ == "__main__":
     unittest.main()
