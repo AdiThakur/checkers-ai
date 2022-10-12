@@ -222,6 +222,45 @@ def df_minimax(curr_state: State, depth_limit: int) -> Tuple[int, Optional[State
     return best_util, best_move
 
 
+def alpha_beta(
+    curr_state: State, alpha: int, beta: int, depth_limit: int
+) -> Tuple[int, Optional[State]]:
+
+    best_move: Optional[State] = None
+    best_util = -inf if curr_state.is_max_turn else inf
+    curr_util = basic_utility(curr_state)
+
+    if depth_limit == 0 or is_game_over(curr_state):
+        return curr_util, best_move
+
+    successors = curr_state.get_successors()
+
+    if len(successors) == 0:
+        return curr_util, best_move
+
+    for successor in successors:
+
+        s_state = State(successor, not (curr_state.is_max_turn))
+        s_util, _ = alpha_beta(s_state, alpha, beta, depth_limit - 1)
+
+        if curr_state.is_max_turn:
+            if s_util > best_util:
+                best_util = s_util
+                best_move = s_state
+            if curr_util >= beta:
+                return curr_util, best_move
+            alpha = max(curr_util, alpha)
+        else:
+            if s_util < best_util:
+                best_util = s_util
+                best_move = s_state
+            if curr_util <= alpha:
+                return curr_util, best_move
+            beta = min(curr_util, beta)
+
+    return best_util, best_move
+
+
 def generate_grid(filename: str) -> Grid:
 
     grid = []
@@ -249,7 +288,8 @@ def write_best_move(filename: str, best_move: Optional[State]) -> None:
 def main(input_filename: str, output_filename: str) -> None:
     initial_grid = generate_grid(input_filename)
     initial_state = State(initial_grid, True)
-    _, best_move = df_minimax(initial_state, depth_limit=8)
+    # _, best_move = df_minimax(initial_state, depth_limit=8)
+    _, best_move = alpha_beta(initial_state, -inf, inf, depth_limit=10)
     write_best_move(output_filename, best_move)
 
 
