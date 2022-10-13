@@ -13,8 +13,6 @@ MIN = 'b'
 Grid = List[List[str]]
 Coord = Tuple[int, int]
 
-# Assuming that our AI (red player) starts from bottom of board, and enemy AI (black player) starts from top
-
 
 class State:
 
@@ -183,43 +181,12 @@ def basic_utility(state: State) -> int:
                 if piece.isupper():
                     min_count += 1
 
-    return (max_count - min_count)
+    return max_count - min_count
 
 
 def is_game_over(state: State) -> bool:
     max_pieces, min_pieces = state.get_piece_count()
     return max_pieces == 0 or min_pieces == 0
-
-
-def df_minimax(curr_state: State, depth_limit: int) -> Tuple[int, Optional[State]]:
-
-    best_move: Optional[State] = None
-    best_util = -inf if curr_state.is_max_turn else inf
-    curr_util = basic_utility(curr_state)
-
-    if depth_limit == 0 or is_game_over(curr_state):
-        return curr_util, best_move
-
-    successors = curr_state.get_successors()
-
-    if len(successors) == 0:
-        return curr_util, best_move
-
-    for successor in successors:
-
-        s_state = State(successor, not (curr_state.is_max_turn))
-        s_util, _ = df_minimax(s_state, depth_limit - 1)
-
-        if curr_state.is_max_turn:
-            if s_util > best_util:
-                best_util = s_util
-                best_move = s_state
-        else:
-            if s_util < best_util:
-                best_util = s_util
-                best_move = s_state
-
-    return best_util, best_move
 
 
 def alpha_beta(
@@ -286,9 +253,7 @@ def write_best_move(filename: str, best_move: Optional[State]) -> None:
 
 
 def main(input_filename: str, output_filename: str) -> None:
-    initial_grid = generate_grid(input_filename)
-    initial_state = State(initial_grid, True)
-    # _, best_move = df_minimax(initial_state, depth_limit=8)
+    initial_state = State(generate_grid(input_filename), True)
     _, best_move = alpha_beta(initial_state, -inf, inf, depth_limit=12)
     write_best_move(output_filename, best_move)
 
@@ -303,5 +268,3 @@ if __name__ == "__main__":
         input_filename=argv[1],
         output_filename=argv[2],
     )
-
-    # main("test_inputs/puzzle1.txt", "test_outputs/puzzle1_out.txt")
