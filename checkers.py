@@ -44,7 +44,7 @@ class State:
                 # Mandatory Captures; if a capture can be performed, no point in
                 # exploring non-capture moves
                 if len(jump_moves) == 0:
-                    normal_moves.extend(self._normal_move(self.grid, (row, col)))
+                    normal_moves.extend(self._normal_move((row, col)))
 
         if len(jump_moves):
             return jump_moves
@@ -65,10 +65,10 @@ class State:
 
         return (max_count, min_count)
 
-    def _normal_move(self, grid: Grid, pos: Coord) -> List[Grid]:
+    def _normal_move(self, pos: Coord) -> List[Grid]:
 
         row, col = pos
-        piece_to_move = grid[row][col]
+        piece_to_move = self.grid[row][col]
         row_deltas = self._get_row_deltas(piece_to_move)
 
         moves = []
@@ -81,8 +81,8 @@ class State:
 
                 if n_row not in range(DIM) or n_col not in range(DIM):
                     continue
-                if grid[n_row][n_col] == EMPTY:
-                    grid_after_move = self._swap_pieces_on_copy(grid, pos, (n_row, n_col))
+                if self.grid[n_row][n_col] == EMPTY:
+                    grid_after_move = self._swap_pieces_on_copy(self.grid, pos, (n_row, n_col))
                     self._try_promotion(grid_after_move, (n_row, n_col))
                     moves.append(grid_after_move)
 
