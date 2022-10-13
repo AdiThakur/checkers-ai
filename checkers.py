@@ -165,23 +165,32 @@ class State:
         return False
 
 
-def basic_utility(state: State) -> int:
+def get_num_safe_pieces(grid: Grid, piece: str) -> int:
 
-    max_count = 0
-    min_count = 0
+    if piece == MAX:
+        rows = cols = range(DIM)
+    else:
+        rows = cols = range(DIM - 1, -1, -1)
 
-    for row in state.grid:
-        for piece in row:
-            if piece.lower() == MAX:
-                max_count += 1
-                if piece.isupper():
-                    max_count += 1
-            elif piece.lower() == MIN:
-                min_count += 1
-                if piece.isupper():
-                    min_count += 1
+    num_safe_pieces = 0
 
-    return max_count - min_count
+    for row in rows:
+        for col in cols:
+
+            curr_piece = grid[row][col].lower()
+
+            if curr_piece == EMPTY:
+                continue
+            if curr_piece != piece:
+                return num_safe_pieces
+            if curr_piece == piece:
+                num_safe_pieces += 1
+
+    return num_safe_pieces
+
+
+def safe_pieces_heuristic(state: State):
+    return get_num_safe_pieces(state.grid, MAX) - get_num_safe_pieces(state.grid, MIN)
 
 
 def is_game_over(state: State) -> bool:
@@ -195,7 +204,7 @@ def alpha_beta(
 
     best_move: Optional[State] = None
     best_util = -inf if curr_state.is_max_turn else inf
-    curr_util = basic_utility(curr_state)
+    curr_util = safe_pieces_heuristic(curr_state)
 
     if depth_limit == 0 or is_game_over(curr_state):
         return curr_util, best_move

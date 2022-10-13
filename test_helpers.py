@@ -21,57 +21,74 @@ class TestGenerateGrid(unittest.TestCase):
         self.assertEqual(expected_grid, result)
 
 
-class TestBasicUtility(unittest.TestCase):
-    def test_some_max_and_min(self):
+class TestSafePiecesHeuristic(unittest.TestCase):
+    def test_no_pieces(self):
         grid = [
             [".", ".", ".", ".", ".", ".", ".", "."],
-            [".", ".", ".", ".", "b", ".", ".", "."],
-            [".", ".", ".", ".", ".", ".", ".", "R"],
-            [".", ".", "b", ".", "b", ".", ".", "."],
-            [".", ".", ".", "b", ".", ".", ".", "r"],
             [".", ".", ".", ".", ".", ".", ".", "."],
-            [".", ".", ".", "r", ".", ".", ".", "."],
-            [".", ".", ".", ".", "B", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
         ]
-
         state = State(grid, True)
-        utility = basic_utility(state)
 
-        self.assertEqual(-2, utility)
-    
-    def test_no_max_some_min(self):
+        value = safe_pieces_heuristic(state)
+
+        self.assertEqual(0, value)
+
+    def test_only_max(self):
         grid = [
+            [".", ".", ".", ".", ".", "R", ".", "."],
+            [".", ".", "r", ".", "r", ".", ".", "."],
             [".", ".", ".", ".", ".", ".", ".", "."],
-            [".", ".", ".", ".", "b", ".", ".", "."],
             [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "r"],
+            [".", "r", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", "r", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+        ]
+        state = State(grid, True)
+
+        value = safe_pieces_heuristic(state)
+
+        self.assertEqual(6, value)
+    
+    def test_only_min(self):
+        grid = [
+            [".", ".", ".", ".", ".", "B", ".", "."],
             [".", ".", "b", ".", "b", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "b"],
+            [".", "b", ".", ".", ".", ".", ".", "."],
             [".", ".", ".", "b", ".", ".", ".", "."],
             [".", ".", ".", ".", ".", ".", ".", "."],
-            [".", ".", ".", ".", ".", ".", ".", "."],
-            [".", ".", ".", ".", "B", ".", ".", "."],
         ]
-
         state = State(grid, True)
-        utility = basic_utility(state)
 
-        self.assertEqual(-6, utility)
+        value = safe_pieces_heuristic(state)
 
-    def test_some_max_no_min(self):
+        self.assertEqual(-6, value)
+
+    def test_does_not_consider_kings(self):
         grid = [
-            [".", ".", ".", ".", ".", ".", ".", "."],
-            [".", ".", ".", ".", "r", ".", ".", "."],
-            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", ".", ".", ".", "R", ".", "."],
             [".", ".", "r", ".", "r", ".", ".", "."],
+            [".", ".", ".", ".", ".", ".", ".", "."],
+            [".", ".", "b", ".", "b", ".", ".", "."],
+            [".", ".", ".", "b", ".", ".", ".", "r"],
+            [".", "r", ".", ".", ".", ".", ".", "."],
             [".", ".", ".", "r", ".", ".", ".", "."],
-            [".", ".", ".", ".", ".", ".", ".", "."],
-            [".", ".", ".", ".", ".", ".", ".", "."],
-            [".", ".", ".", ".", "R", ".", ".", "."],
+            [".", ".", "B", ".", "b", ".", ".", "."],
         ]
-
         state = State(grid, True)
-        utility = basic_utility(state)
 
-        self.assertEqual(6, utility)
+        value = safe_pieces_heuristic(state)
+
+        self.assertEqual(1, value)
 
 
 class TestAlphaBeta(unittest.TestCase):
