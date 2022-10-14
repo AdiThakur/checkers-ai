@@ -223,7 +223,7 @@ def alpha_beta(
 
     best_move: Optional[State] = None
     best_util = -inf if curr_state.is_max_turn else inf
-    curr_util = safe_pieces_heuristic(curr_state)
+    curr_util = basic_utility(curr_state.grid)
 
     if depth_limit == 0 or is_game_over(curr_state):
         return curr_util, best_move
