@@ -115,30 +115,6 @@ class TestAlphaBeta(unittest.TestCase):
         self.assertEqual(0, best_util)
         self.assertEqual(expected_grid_fragment, best_move.grid[-3:])
 
-    def test_max_picks_highest_util_successor_depth_1(self):
-        grid = [
-            [".", ".", ".", ".", ".", ".", ".", "."],
-            [".", ".", ".", ".", ".", ".", ".", "."],
-            [".", ".", ".", ".", ".", ".", ".", "."],
-            [".", ".", ".", ".", ".", ".", ".", "."],
-            [".", ".", "B", ".", "b", ".", ".", "."],
-            [".", ".", ".", "r", ".", ".", ".", "."],
-            [".", ".", ".", ".", ".", ".", ".", "."],
-            [".", ".", ".", ".", ".", ".", ".", "."],
-        ]
-        expected_grid_fragment = [
-            [".", ".", ".", ".", ".", ".", ".", "."],
-            [".", ".", ".", ".", ".", ".", ".", "."],
-            [".", ".", ".", ".", ".", ".", ".", "."],
-            [".", "r", ".", ".", ".", ".", ".", "."],
-        ]
-
-        initial_state = State(grid, True)
-        best_util, best_move = alpha_beta(initial_state, -inf, inf, depth_limit=1)
-
-        self.assertEqual(0, best_util)
-        self.assertEqual(expected_grid_fragment, best_move.grid[:4])
-
     def test_king_prefers_multi_jump(self):
         grid = [
             [".", ".", ".", ".", ".", ".", ".", "."],

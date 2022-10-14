@@ -165,6 +165,25 @@ class State:
         return False
 
 
+def basic_utility(grid: Grid) -> int:
+
+    max_count = 0
+    min_count = 0
+
+    for row in grid:
+        for piece in row:
+            if piece.lower() == MAX:
+                max_count += 1
+                if piece.isupper():
+                    max_count += 1
+            elif piece.lower() == MIN:
+                min_count += 1
+                if piece.isupper():
+                    min_count += 1
+
+    return max_count - min_count
+
+
 def get_num_safe_pieces(grid: Grid, piece: str) -> int:
 
     if piece == MAX:
@@ -210,6 +229,7 @@ def alpha_beta(
         return curr_util, best_move
 
     successors = curr_state.get_successors()
+    successors.sort(key=basic_utility)
 
     if len(successors) == 0:
         return curr_util, best_move
@@ -263,7 +283,7 @@ def write_best_move(filename: str, best_move: Optional[State]) -> None:
 
 def main(input_filename: str, output_filename: str) -> None:
     initial_state = State(generate_grid(input_filename), True)
-    _, best_move = alpha_beta(initial_state, -inf, inf, depth_limit=12)
+    _, best_move = alpha_beta(initial_state, -inf, inf, depth_limit=10)
     write_best_move(output_filename, best_move)
 
 
